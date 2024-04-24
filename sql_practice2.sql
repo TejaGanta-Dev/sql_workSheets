@@ -169,12 +169,109 @@ SELECT * FROM employees;
 -- Write a query to find products that are sold by 
 -- both Supplier A and Supplier B, 
 -- excluding products sold by only one supplier.
-select * from products;
+-- select * from (
+-- select product_name,product_id,count(distinct supplier_name) as suppliers from products 
+--  group by product_name,product_id)
+--  derived where derived.suppliers=2 ;
+-- select * from (
+-- select product_name,product_id,count(distinct supplier_name) as suppliers from products
+--  where supplier_name='Supplier A' or supplier_name='Supplier B' group by 1,2 HAVING suppliers = 2
+--  derived where derived.suppliers=2 ;
+
+-- select product_name,product_id from products
+--  where supplier_name='Supplier C' or supplier_name='Supplier B'
+--  and supplier_name<>'Supplier A' group by 1,2 having count(product_id)=2;
+
+/*
+-- Question 
+You have a table called products with below columns
+product_id, product_name, price, qty 
+
+Calculate the percentage contribution of each product 
+to total revenue?
+
+Round the result into 2 decimal
+*/
+-- SELECT * FROM products;
+
+-- SELECT sum(price*quantity_sold) FROM products;
+
+-- SELECT product_id,product_name,price*quantity_sold as revenue,
+--     ROUND(price * quantity_sold/
+--     (SELECT SUM(price * quantity_sold) from products where product_name='iPhone' or product_name='MacBook Pro' ) * 100, 2) as percent
+-- FROM products where product_name='iPhone' or product_name='MacBook Pro' group by 1,2;
+
+/*
+-- Question
+
+You have dataset of a food delivery company
+with columns order_id, customer_id, order_date, 
+pref_delivery_date
 
 
+If the customer's preferred delivery date is 
+the same as the order date, then the order is 
+called immediate; otherwise, it is called scheduled.
 
 
+Write a solution to find the percentage of immediate
+orders in the first orders of all customers, 
+rounded to 2 decimal places.
 
+*/
+-- select * from Delivery where order_date=customer_pref_delivery_date;
+
+-- with firstOrders as(
+-- select derived.customer_id from (
+-- SELECT *,dense_rank() over( partition by customer_id order by order_date) dat FROM Delivery) derived where derived.dat=1)
+-- SELECT count(distinct customer_id), round(count(distinct customer_id)/(select count(customer_id) from firstOrders)*100,2) percenetage  FROM
+--  Delivery where order_date=customer_pref_delivery_date and  customer_id in( select customer_id from firstOrders);
+
+-- Write an SQL query to determine the percentage
+-- of orders where customers select next day delivery. 
+-- We're excited to see your solution! 
+
+-- select count(delivery_id), (select distinct  count(delivery_id) from Delivery
+-- ) totalOrders,round(count(delivery_id)/(select distinct  count(delivery_id) from Delivery
+-- )*100,2) as percent from Delivery 
+-- where order_date+1=customer_pref_delivery_date;
+
+/*
+
+-- Amazon Data Analyst Interview Question
+
+Write a query that'll identify returning active users. 
+
+A returning active user is a user that has made a 
+second purchase within 7 days of their first purchase
+
+Output a list of user_ids of these returning active users.
+
+*/
+SELECT * FROM amazon_transactions;
+
+with secondPurchase as(
+SELECT * FROM (
+SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=2),
+firstPurchase as(SELECT * FROM (
+SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=1)
+select f.id, f.user_id,f.purchase_date,s.purchase_date from secondPurchase s join firstPurchase f on s.user_id=f.user_id
+ where date_sub(s.purchase_date, interval 7 DAY)<=f.purchase_date
+
+
+SELECT * FROM amazon_transactions;
+    
+SELECT 
+    DISTINCT a1.user_id as active_users
+     -- a1.purchase_date as first_purchase,
+--      a2.purchase_date as second_purchase,
+--      a2.purchase_date - a1.purchase_date
+FROM amazon_transactions a1 -- first purchase table
+JOIN amazon_transactions a2 -- second purchase table 
+ON a1.user_id = a2.user_id    
+AND a1.purchase_date < a2.purchase_date
+AND a2.purchase_date - a1.purchase_date <= 7
+ORDER BY 1
 
 
 
