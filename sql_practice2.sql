@@ -248,31 +248,47 @@ second purchase within 7 days of their first purchase
 Output a list of user_ids of these returning active users.
 
 */
-SELECT * FROM amazon_transactions;
+-- SELECT * FROM amazon_transactions;
 
-with secondPurchase as(
-SELECT * FROM (
-SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=2),
-firstPurchase as(SELECT * FROM (
-SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=1)
-select f.id, f.user_id,f.purchase_date,s.purchase_date from secondPurchase s join firstPurchase f on s.user_id=f.user_id
- where date_sub(s.purchase_date, interval 7 DAY)<=f.purchase_date
+-- with secondPurchase as(
+-- SELECT * FROM (
+-- SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=2),
+-- firstPurchase as(SELECT * FROM (
+-- SELECT *,dense_rank() over( partition by user_id order by purchase_date )  ranks FROM amazon_transactions) derived  where derived.ranks=1)
+-- select f.id, f.user_id,f.purchase_date,s.purchase_date from secondPurchase s join firstPurchase f on s.user_id=f.user_id
+--  where date_sub(s.purchase_date, interval 7 DAY)<=f.purchase_date;
 
 
-SELECT * FROM amazon_transactions;
-    
-SELECT 
-    DISTINCT a1.user_id as active_users
-     -- a1.purchase_date as first_purchase,
---      a2.purchase_date as second_purchase,
---      a2.purchase_date - a1.purchase_date
-FROM amazon_transactions a1 -- first purchase table
-JOIN amazon_transactions a2 -- second purchase table 
-ON a1.user_id = a2.user_id    
-AND a1.purchase_date < a2.purchase_date
-AND a2.purchase_date - a1.purchase_date <= 7
-ORDER BY 1
+-- SELECT * FROM amazon_transactions;
+--     
+-- SELECT DISTINCT  a1.user_id as active_users
+-- FROM amazon_transactions a1 -- first purchase table
+-- JOIN amazon_transactions a2 -- second purchase table 
+-- ON a1.user_id = a2.user_id    
+-- AND a1.purchase_date < a2.purchase_date
+-- AND a2.purchase_date - a1.purchase_date >7
+-- ORDER BY 1
+/*
+-- Calculate the total revenue from 
+each customer in March 2019. 
 
+Include only customers who 
+were active in March 2019.
+
+Output the revenue along with the 
+customer id and sort the results based 
+on the revenue in descending order.
+*/
+-- select sum(derived.revenue) from (
+-- select cust_id,sum(total_order_cost) revenue,count(cust_id) from Orders
+--  where extract(month from order_date)=03 or extract(month from order_date)=04 
+--  and  extract(year from order_date)=2019 
+--  group by cust_id
+--  order by revenue desc) derived ;
+--  select sum(total_order_cost) from orders  where extract(month from order_date)=03 or extract(month from order_date)=04 
+--  and  extract(year from order_date)=2019 
+ use tejadb3;
+-- select * from Orders;
 
 
 

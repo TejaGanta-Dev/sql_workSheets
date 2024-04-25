@@ -25,9 +25,9 @@ with categories as (select * from( select category,sum(spend) as sspend,dense_ra
 
 -- Insert sample records into Sales table
 -- select * from products;
- select * from sales where extract(year from sale_date)=2024;
-select p.product_id, p.product_name, p.category,  p.price from products as p where p.product_id Not in(
-select product_id from sales where extract(year from sale_date)=2024 );
+--  select * from sales where extract(year from sale_date)=2024;
+-- select p.product_id, p.product_name, p.category,  p.price from products as p where p.product_id Not in(
+-- select product_id from sales where extract(year from sale_date)=2024 );
 -- --  join sales s on s.product_id=p.product_id ;
 -- select DATE_SUB(CURRENT_DATE, INTERVAL 3 MONTH);
 -- select product_id from sales where extract();
