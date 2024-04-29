@@ -18,7 +18,6 @@ with categories as (select * from( select category,sum(spend) as sspend,dense_ra
 -- and extract(year from order_date)=extract(year from current_date));
 -- 7 days over
 
-
 -- select * from (
 -- select *,row_number() over(partition by name order by name) as row_id from employees) as dervied where row_id>
 -- Create Sales table
