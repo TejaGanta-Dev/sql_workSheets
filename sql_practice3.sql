@@ -195,15 +195,197 @@ The output should contain 'week'
 and 'quantity'.
 
 */
-select * from orders;
+-- select * from orders;
 
 
 
-select extract(week from order_date),sum(quantity) from orders where extract(year from order_date)=2023 and 
-extract(quarter from order_date)=1 group by 1 order by 1;
+-- select extract(week from order_date),sum(quantity) from orders where extract(year from order_date)=2023 and 
+-- extract(quarter from order_date)=1 group by 1 order by 1;
 
--- Find each quarter and their total qty sale
-select extract(quarter from order_date) quarter,sum(quantity) as total_qty_sale from orders where extract(year from order_date)=2023 group by 1
+-- -- Find each quarter and their total qty sale
+-- select extract(quarter from order_date) quarter,sum(quantity) as total_qty_sale from orders where extract(year from order_date)=2023 group by 1
+
+
+/*
+-- Amazon Data Analyst Interview
+-- Top Monthly Sellers
+
+You are provided with a transactional dataset from 
+Amazon that contains detailed information about 
+sales across different products and marketplaces. 
+
+Your task is to list the top 3 sellers in each 
+product category for January.
+
+The output should contain 'seller_id' , 
+'total_sales' ,'product_category' , 
+'market_place', and 'month'.
+
+*/
+-- select * from sales_data;
+-- select * from (
+-- select s.seller_id,s.product_category,sum(s.total_sales), 
+-- dense_rank() over(partition by s.product_category order by sum(s.total_sales) desc)
+--  rnk from sales_data as s where extract(month from s.month) group by 1,2 
+--  )derived where derived.rnk<=3;
+
+
+--  by Market Place
+--  
+--  select * from (
+-- select s.seller_id,s.market_place,sum(s.total_sales), 
+-- dense_rank() over(partition by s.market_place order by sum(s.total_sales) desc)
+--  rnk from sales_data as s where extract(month from s.month) group by 1,2 
+--  )derived where derived.rnk<=3;
+/*
+Netflix Data Analyst Interview Question
+
+For each video, find how many unique users 
+flagged it. 
+A unique user can be identified using the
+combination of their first name and last name. 
+
+Do not consider rows in which there is no flag ID.
+
+*/
+
+-- select * from user_flags;
+
+-- select video_id,count(distinct(concat(user_firstname,user_lastname))) from user_flags where flag_id is not null
+-- group by video_id;
+
+
+
+/*
+-- Meta Data Analyst Question 
+
+You have meta table with columns
+user_id, name, status, country
+
+Output share of US users that are active. 
+Active users are the ones with an 
+"open" status in the table.
+
+Return total users and active users
+and active users share for US
+*/
+
+-- COUNT FILTER FOR US
+-- COUNT ACTIVE users in US
+-- active users/total users * 100
+
+
+-- SELECT count(distinct user_id) total,
+-- count(case when country='USA' and status='open' then user_id end) ActiveUsers,
+-- Round((count(case when country='USA' and status='open' then user_id end)/count(distinct user_id))*100,2)
+--  FROM fb_active_users ;
+--  
+--  SELECT count(case when user_id then user_id end) total
+--  FROM fb_active_users ;
+-- --  select * from fb_active_users where country='USA' and status='open';
+--  SELECT
+--  count(case when country='USA' and status='open' then user_id end) ActiveUsers  FROM fb_active_users ;
+
+-- Find non_active users share for China
+
+-- select * from fb_active_users where country='China'
+--  and status='closed' ;
+
+
+select* from Students;
+/*
+Data Analyst Interview Questions 
+
+You have a students table with columns
+id, name, marks and class of students
+
+-- Write a query to fetch students
+with minmum marks and maximum marks 
+
+
+*/
+-- select student_id, student_name, marks, class from Students
+--  where marks=(select min(marks) from Students) or marks=(select max(marks) from Students) order by marks desc;
+
+
+-- Write a SQL query to return students with maximum marks in each class
+-- select * from (
+-- select student_id, student_name, marks, class,dense_rank() over(partition by class order by max(marks)) rnk from Students group by 1
+-- ) derived where derived.rnk=1;
+/*
+You are given a bank transaction data 
+with columns bank_id, customer_id, 
+amount_type(credit debit), 
+transaction_amount and transaction_date
+
+
+
+-- Write a query to find starting and ending 
+trans amount for each customer
+
+Return cx_id, their first_transaction_amt, 
+last_transaction and these transaction_date
+
+*/
+-- select C;
+-- -- alter
+-- select customer_id,first_transaction_amt,last_transaction,transaction_date from bank_transactions;
+
+
+-- with firstTransac as(
+-- select * from (
+-- SELECT *,dense_rank() over(partition by customer_id order by transaction_date) rnk FROM bank_transactions) d where d.rnk=1 ),
+-- secondTransac as(
+-- select * from (
+-- SELECT *,dense_rank() over(partition by customer_id order by transaction_date desc)rnk FROM bank_transactions) d where d.rnk=1) 
+
+-- select f.customer_id,f.transaction_amount,f.transaction_date,s.transaction_amount,s.transaction_date from firstTransac f join secondTransac s 
+-- on  f.customer_id=s.customer_id;
+
+
+
+
+-- select customer_id,sum( case when transaction_type='credit' then transaction_amount end) totalCredit, 
+-- sum( case when transaction_type<>'credit' then transaction_amount end) totalDebit , 
+-- sum( case when transaction_type='credit' then transaction_amount end)-sum( case when transaction_type<>'credit' then transaction_amount end)
+--  balance
+-- from bank_transactions group by customer_id;
+
+/*
+Question
+
+Write an SQL script to display the 
+immediate manager of an employee.
+
+Given a table Employees with columns: 
+Emp_No, Emp_Name, and Manager_Id.
+
+The script should take an input parameter 
+Emp_No and return the employee's name 
+along with their immediate manager's name.
+
+If an employee has no manager 
+(i.e., Manager_Id is NULL), 
+display "No Boss" for that employee.
+
+*/
+
+-- SELECT * FROM employees;
+
+-- SELECT e.Emp_No,e.emp_name,
+-- case when ee.manager_id is null then "No Boss " else ee.manager_id end
+--  FROM employees e join employees ee on e.emp_no=ee.emp_no;
+
+
+
+
+/*
+
+-- Amazon Data Analyst Interview Question
+
+You are given two table of amazon
+spending_records and customers 
+
 
 
 
